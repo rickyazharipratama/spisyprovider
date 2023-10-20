@@ -20,10 +20,10 @@ class LandingPresenterImpl implements LandingPresenter{
       print("nav button tapped");
       switch (index) {
         case 0:
-          context.push(ConstantCollection.repository.routers.location.listStudent);       
+          context.go(ConstantCollection.repository.routers.location.listStudent);       
           break;
         case 1 :
-          context.push(ConstantCollection.repository.routers.location.logout);
+          context.go(ConstantCollection.repository.routers.location.logout);
           break;
         default:
       };
