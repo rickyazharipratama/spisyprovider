@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pratama_form_field_factory/buttons/pratama_icon_buttons.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:spisyprovider/factory/Utils/enum_collections.dart';
 import 'package:spisyprovider/factory/Utils/format_util.dart';
+import 'package:spisyprovider/factory/implementor/providers/detail_student_provider_impl.dart';
 import 'package:spisyprovider/factory/implementor/views/components/cards/student_card_presenter_impl.dart';
+import 'package:spisyprovider/factory/provider/detail_student_provider.dart';
 import 'package:spisyprovider/factory/provider/list_card_provider.dart';
 import 'package:spisyprovider/factory/provider/student_provider.dart';
 import 'package:spisyprovider/views/components/cards/student_card/student_card_presenter.dart';
@@ -23,7 +26,7 @@ class StudentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ListCardProvider provider = context.read<ListCardProvider>();
+    final ListCardProvider provider = context.watch<ListCardProvider>();
     double pageWidth = MediaQuery.of(context).size.width * 0.75;
     double pageHeight = pageWidth * 13 / 9;
     final StudentCardPresenter presenter  = StudentCardPresenterImpl(
@@ -35,6 +38,7 @@ class StudentCard extends StatelessWidget {
       child: Selector<ListCardProvider, int>(
         selector: (context,provider) => provider.activePage,
         builder: (context, value, child){
+          print("build list card with id : ${student.id} and active page = $value");
           double scale = provider.activePage == index ? 1 : 0.8;
           return TweenAnimationBuilder(
             tween: Tween(begin: scale, end: scale), 
@@ -45,7 +49,15 @@ class StudentCard extends StatelessWidget {
                 child: child,
               );
             },
-            child: studentCard(context, provider,presenter,pageWidth, pageHeight)
+            child: ChangeNotifierProvider<DetailStudentProvider>(
+              create: (context) => DetailStudentProviderImpl(
+                student: student
+              ),builder: (context, child){
+                presenter.currentStudentProvider = context.read<DetailStudentProvider>();
+                print("build student with id : ${presenter.currentStudentProvider.currentStudent.id}");
+                return studentCard(context, provider,presenter,pageWidth, pageHeight);
+              },
+            )
           );
         }
       ),
@@ -85,13 +97,17 @@ class StudentCard extends StatelessWidget {
               icon: Icons.edit,
               color: const Color.fromARGB(255, 104, 104, 104),
               onTap: () async{
-                await context.push(ConstantCollection.repository.routers.location.form,
+                 StudentModel? updatedStudent =  await context.push(ConstantCollection.repository.routers.location.form,
                   extra: student
-                ).then((value) {
-                  if(value == StudentEventResult.studentUpdated){
-                    presenter.provider.setState(state: StudentEventResult.studentPrepareToFetch);
-                  }
-                });
+                );
+                if(updatedStudent != null){
+                  //StudentModel updatedStudent = StudentModel.fromJson(jsonUpdated as Map<String,dynamic>);
+                  presenter.currentStudentProvider.preUpdateStudent(updatedStudent: updatedStudent);
+                  Future.delayed(const Duration(milliseconds: 3000),(){})
+                    .whenComplete(()  async=>  await presenter.currentStudentProvider.updatingStudent(
+                      updatedStudent: updatedStudent
+                    ));
+                }
               },
               size: 25,
               areaSize: 40,
@@ -105,7 +121,9 @@ class StudentCard extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.fromLTRB(0, 15, 5, 15),
+                  padding: EdgeInsets.fromLTRB((pageWidth * 0.35), 10, 5, 10),
+                  width: pageWidth,
+                  height: 40,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -118,38 +136,114 @@ class StudentCard extends StatelessWidget {
                       ]
                     ),
                   ),
+                  child: Selector<DetailStudentProvider,String?>(
+                    selector: (context,provider) => provider.currentStudent.name,
+                    builder: (context, value, child){
+                      print("building name with id ${student.id} with value = $value");
+                      if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 215, 212, 212),
+                            borderRadius: BorderRadius.circular(5)
+                          ),
+                          child: Shimmer.fromColors(
+                            baseColor: const Color.fromARGB(255, 244, 244, 244), 
+                            highlightColor: const Color.fromARGB(255, 251, 251, 251),
+                            child: SizedBox(
+                              width: pageWidth * 0.25,
+                              height: 7,
+                            )
+                          ),
+                        ); 
+                      }
+                      return Text(
+                        value!,
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                          color: Colors.white
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      );
+                    },
+                  )
                 ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(((pageWidth * 0.3)), 5, 10, 10),
-                  child: Text(
-                   "${student.gender! ? "Pria" : "Wanita"}, ${student.age} Tahun",
-                   textAlign: TextAlign.left,
-                   style: const TextStyle(
-                    color: Color.fromARGB(255, 129, 128, 128)
-                   ),
-                  ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(((pageWidth * 0.35)), 5, 10, 10),
+                  width: pageWidth,
+                  child: Selector<DetailStudentProvider, int?>(
+                    selector: (context, provider) => provider.currentStudent.age,
+                    builder: (context, value, child){
+                      int? newAge = value;
+                      return Selector<DetailStudentProvider, bool?>(
+                        selector: (context,provider) => provider.currentStudent.gender,
+                        builder: (context, value, child) {
+                          if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 215, 212, 212),
+                                borderRadius: BorderRadius.circular(5)
+                              ),
+                              child: Shimmer.fromColors(
+                                baseColor: const Color.fromARGB(255, 244, 244, 244), 
+                                highlightColor: const Color.fromARGB(255, 251, 251, 251),
+                                child: SizedBox(
+                                   width: pageWidth * 0.2,
+                                  height: 5,
+                                )
+                              ),
+                            );
+                          }
+                          return Text(
+                            "${value! ? "Pria" : "Wanita"}, $newAge Tahun",
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 129, 128, 128)
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  )
                 )  
               ],
             )
           ),
 
           Positioned(
-            top: 15,
-            left: 20,
+            top: 38,
+            left: 15,
             child: Container(
-              width: pageWidth * 0.3,
-              height: (pageWidth * 1.1)/3,
+              width: pageWidth * 0.25,
+              height: (pageWidth * 0.8)/3,
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 210, 208, 208),
-                borderRadius: BorderRadius.all(Radius.circular(3))
+                color: Color.fromARGB(255, 222, 220, 220),
+                borderRadius: BorderRadius.all(Radius.circular(5))
               ),
-              child: Center(
-                child: Icon(
-                  student.gender! ? Icons.account_circle_rounded : Icons.account_circle_outlined,
-                  size: pageWidth * 0.3 * 0.75,
-                  color: const Color.fromARGB(255, 133, 131, 131),
-                ),
-              ),
+              child: Selector<DetailStudentProvider, bool?>(
+                selector: (context, provider) => provider.currentStudent.gender,
+                builder: (context, value, child) {
+                  if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
+                    return Shimmer.fromColors(
+                      baseColor: const Color.fromARGB(255, 244, 244, 244), 
+                      highlightColor: const Color.fromARGB(255, 251, 251, 251),
+                      child: SizedBox(
+                        width:  pageWidth * 0.3,
+                        height: (pageWidth * 1.1)/3,
+                      )
+                    );
+                  }
+                  return Center(
+                    child: Icon(
+                      value! ? Icons.account_circle_rounded : Icons.account_circle_outlined,
+                      size: pageWidth * 0.3 * 0.75,
+                      color: const Color.fromARGB(255, 133, 131, 131),
+                    ),
+                  );
+                },
+              )
             )
           ),
 
@@ -163,33 +257,43 @@ class StudentCard extends StatelessWidget {
               child: Column(
                 children: [
 
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 10,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          student.gender! ? Icons.account_circle_rounded : Icons.account_circle_outlined,
-                          size: 30,
-                          color: const Color.fromARGB(255, 210, 208, 208),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              student.name.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                                color:  Color.fromARGB(255, 157, 155, 155)
-                              ),
-                            ),
-                          )
-                        )
-                      ],
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(
+                  //     top: 10,
+                  //   ),
+                  //   child: Row(
+                  //     children: [
+
+                  //       Selector<DetailStudentProvider,bool?>(
+                  //         selector: (context, provider) => provider.currentStudent.gender,
+                  //         builder: (context, value, child){
+                  //           if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
+                  //             return Container(
+                  //               color: const Color.fromARGB(255, 215, 212, 212),
+                  //               child: Shimmer.fromColors(
+                  //                 baseColor: const Color.fromARGB(255, 244, 244, 244), 
+                  //                 highlightColor: const Color.fromARGB(255, 251, 251, 251),
+                  //                 child: const SizedBox(
+                  //                   width: 30,
+                  //                   height: 30,
+                  //                 ),
+                  //               ),
+                  //             );
+                  //           }
+                  //           return Icon(
+                  //             value! ? Icons.account_circle_rounded : Icons.account_circle_outlined,
+                  //             size: 30,
+                  //             color: const Color.fromARGB(255, 210, 208, 208),
+                  //           );
+                  //         },
+                  //       ),
+                        
+                  //       Expanded(
+                  //         child: 
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
 
                   Padding(
                     padding: const EdgeInsets.only(
@@ -205,14 +309,38 @@ class StudentCard extends StatelessWidget {
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              FormatUtil.collection.formattedDate(student.birth!)!,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 14,
-                                color:  Color.fromARGB(255, 157, 155, 155)
-                              ),
-                            ),
+                            child: Selector<DetailStudentProvider,DateTime?>(
+                              selector: (context,provider) => provider.currentStudent.birth,
+                              builder: (context, value, child) {
+                                print("build birth with id: ${student.id} with value ${value?.toIso8601String()}");
+                                if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
+
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(255, 215, 212, 212),
+                                      borderRadius: BorderRadius.circular(5)
+                                    ),
+                                    child: Shimmer.fromColors(
+                                      baseColor: const Color.fromARGB(255, 244, 244, 244), 
+                                      highlightColor: const Color.fromARGB(255, 251, 251, 251),
+                                      child: SizedBox(
+                                        width: pageWidth * 0.25,
+                                        height: 7,
+                                      )
+                                    ),
+                                  ); 
+
+                                }
+                                return Text(
+                                  FormatUtil.collection.formattedDate(student.birth!)!,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 14,
+                                    color:  Color.fromARGB(255, 157, 155, 155)
+                                  ),
+                                );
+                              },
+                            )
                           )
                         )
                       ],
@@ -223,6 +351,9 @@ class StudentCard extends StatelessWidget {
                       top: 10,
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(
                           Icons.location_on_outlined,
@@ -232,14 +363,64 @@ class StudentCard extends StatelessWidget {
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              student.address.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 14,
-                                color:  Color.fromARGB(255, 157, 155, 155)
-                              ),
-                            ),
+                            child: Selector<DetailStudentProvider,String?>(
+                              selector: (_,__) => __.currentStudent.address,
+                              builder: (context, value, child) {
+                                print("build address with id : ${student.id} with value ; $value");
+                                if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(5)
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Shimmer.fromColors(
+                                          baseColor: const Color.fromARGB(255, 244, 244, 244), 
+                                          highlightColor: const Color.fromARGB(255, 251, 251, 251),
+                                          child: SizedBox(
+                                            width: pageWidth * 0.05,
+                                            height: 7,
+                                          )
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 13),
+                                          child: Shimmer.fromColors(
+                                            baseColor: const Color.fromARGB(255, 244, 244, 244), 
+                                            highlightColor: const Color.fromARGB(255, 251, 251, 251),
+                                            child: SizedBox(
+                                              width: pageWidth * 0.2,
+                                              height: 7,
+                                            )
+                                          ),
+                                        ),
+                                        
+                                        Padding(
+                                          padding: const EdgeInsets.only(top:13),
+                                          child: Shimmer.fromColors(
+                                            baseColor: const Color.fromARGB(255, 244, 244, 244), 
+                                            highlightColor: const Color.fromARGB(255, 251, 251, 251),
+                                            child: SizedBox(
+                                              width: pageWidth * 0.1,
+                                              height: 7,
+                                            )
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ); 
+                                }
+                                return Text(
+                                  student.address.toString(),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 14,
+                                    color:  Color.fromARGB(255, 157, 155, 155)
+                                  ),
+                                );
+                              },
+                            )
                           )
                         )
                       ],

@@ -3,6 +3,7 @@ import 'package:pratama_form_field_factory/pickers/pratama_date_time_picker/prat
 import 'package:pratama_form_field_factory/radios/models/pratama_radio_model.dart';
 import 'package:pratama_form_field_factory/radios/pratama_radio_presenter.dart';
 import 'package:pratama_form_field_factory/text_field/pratama_text_field_presenter.dart';
+import 'package:spisyprovider/factory/provider/button_form_behaviour_provider.dart';
 import 'package:spisyprovider/factory/provider/student_provider.dart';
 import 'package:spisyprovider/views/Page/form/form_presenter.dart';
 import 'package:spisyprovider/warehouse/constant_collection.dart';
@@ -18,10 +19,14 @@ class FormPresenterImpl implements FormPresenter{
   late PratamaTextFieldPresenter _umurPresenter;
 
   late PratamaDateTimePickerPresenter  _birthPresenter;
-  
   late PratamaRadioPresenter _genderPresenter;
 
-  FormPresenterImpl({ required StudentProvider provider, StudentModel? existingStudent}){
+  final ButtonFormBehaviourProvider? buttonProvider;
+
+  FormPresenterImpl({ 
+    required StudentProvider provider, 
+    StudentModel? existingStudent,
+    this.buttonProvider}){
     _provider = provider;
     _existingStudent = existingStudent ?? StudentModel();
 
@@ -29,7 +34,8 @@ class FormPresenterImpl implements FormPresenter{
       keyboardType: TextInputType.name,
       label: "Nama",
       val: existingStudent?.name,
-      validator: onNameValidation
+      validator: onNameValidation,
+      onChange: changeButtonBehaviour
     );
 
     _alamatTextPresenter = PratamaTextFieldPresenter(
@@ -37,7 +43,8 @@ class FormPresenterImpl implements FormPresenter{
       label: "Alamat",
       maxLine: 3,
       val: existingStudent?.address,
-      validator: onAddressValidation
+      validator: onAddressValidation,
+      onChange: changeButtonBehaviour
     );
 
     _umurPresenter = PratamaTextFieldPresenter(
@@ -62,7 +69,8 @@ class FormPresenterImpl implements FormPresenter{
       ],
       label: "Jenis Kelamin",
       validator: onGenderValidation,
-      selectedValue: existingStudent != null ? existingStudent!.gender : null
+      selectedValue: existingStudent?.gender,
+      onExtendedSelectedRadio: changeButtonBehaviour
     );
   }
 
@@ -96,6 +104,12 @@ class FormPresenterImpl implements FormPresenter{
     return null;
   }
 
+  void changeButtonBehaviour(dynamic val){
+    if(buttonProvider != null){
+      buttonProvider!.enablingButton(isStudentNeedUpdate());
+    }
+  }
+
   String? onAddressValidation(String? val){
     if(val != null){
       if(val.isEmpty){
@@ -125,17 +139,18 @@ class FormPresenterImpl implements FormPresenter{
     int diff = _birthPresenter.diffYearDuration;
     _umurPresenter.val = diff.toString();
     _umurPresenter.textController.value = TextEditingValue(text: "$diff Tahun");
+    changeButtonBehaviour(_umurPresenter.textController.value.text);
   }
 
   
   @override
   onInsertStudent() async{
     StudentModel student = StudentModel(
-      name: _nameTextPresenter.textController.value.text,
+      name: _nameTextPresenter.textController.value.text.trim(),
       birth: _birthPresenter.selectedDate,
       age: int.tryParse(_umurPresenter.val!),
       gender: _genderPresenter.selectedValue,
-      address: _alamatTextPresenter.textController.value.text
+      address: _alamatTextPresenter.textController.value.text.trim()
     );
     print("insert from form call");
     await _provider.insertStudent(student: student);
@@ -143,15 +158,24 @@ class FormPresenterImpl implements FormPresenter{
 
 
   @override
-  onUpdateStudent() async{
+  StudentModel onUpdateStudent(){
     StudentModel student = StudentModel(
-      id: _existingStudent?.id,
-      name: _nameTextPresenter.textController.value.text,
+      id: _existingStudent.id,
+      name: _nameTextPresenter.textController.value.text.trim(),
       birth: _birthPresenter.selectedDate,
       age: int.tryParse(_umurPresenter.val!),
       gender: _genderPresenter.selectedValue,
-      address: _alamatTextPresenter.textController.value.text
+      address: _alamatTextPresenter.textController.value.text.trim()
     );
-    await _provider.updateStudent(student: student);
+    return student;
+  }
+
+  @override
+  bool isStudentNeedUpdate(){
+    return _existingStudent.name != _nameTextPresenter.textController.value.text.trim()
+    || _existingStudent.birth != _birthPresenter.selectedDate
+    || _existingStudent.age != int.tryParse(_umurPresenter.val!)
+    || _existingStudent.gender != _genderPresenter.selectedValue
+    || _existingStudent.address != _alamatTextPresenter.textController.value.text.trim();
   }
 }

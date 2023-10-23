@@ -15,6 +15,10 @@ enum StudentEventResult{
   studentPrepareToFetch,
   studentPrepared,
   studentInserted,
-  studentUpdated,
   studentDeleted
+}
+
+enum DetailStudentEvent{
+  studentPreparing,
+  studentLoaded
 }

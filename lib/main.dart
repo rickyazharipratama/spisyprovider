@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spisyprovider/factory/Utils/transition_util.dart';
+import 'package:spisyprovider/factory/implementor/providers/button_form_behaviour_provider_impl.dart';
 import 'package:spisyprovider/factory/implementor/providers/landing_page_provider_impl.dart';
 import 'package:spisyprovider/factory/implementor/providers/list_catd_provider_impl.dart';
 import 'package:spisyprovider/factory/implementor/providers/student_provider_impl.dart';
+import 'package:spisyprovider/factory/provider/button_form_behaviour_provider.dart';
 import 'package:spisyprovider/factory/provider/landing_page_provider.dart';
 import 'package:spisyprovider/factory/provider/list_card_provider.dart';
 import 'package:spisyprovider/factory/provider/student_provider.dart';
@@ -129,9 +131,17 @@ final GoRouter _router = GoRouter(
                 if(state.extra != null){
                   student = state.extra as StudentModel;
                 }
-                return StudentForm(
-                  student: student,
-                );
+                if(student != null){
+                  return ChangeNotifierProvider<ButtonFormBehaviourProvider>(
+                    create: (context) => ButtonFormBehaviourProviderImpl(
+                      isEnabled: false
+                    ),
+                    builder: (context, child) => StudentForm(
+                      student: student,
+                    ),
+                  );
+                }
+                return const StudentForm();
               },
             ), 
             transitionsBuilder: (context, animation, secondaryAnimation, child) => 

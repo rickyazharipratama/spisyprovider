@@ -14,5 +14,6 @@ abstract class FormPresenter{
   PratamaDateTimePickerPresenter get birthPresenter;
   PratamaRadioPresenter get genderPresenter;
   onInsertStudent();
-  onUpdateStudent();
+  StudentModel onUpdateStudent();
+  bool isStudentNeedUpdate();
 }

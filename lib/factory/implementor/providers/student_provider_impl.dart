@@ -41,18 +41,6 @@ class StudentProviderImpl with ChangeNotifier implements StudentProvider{
   }
 
   @override
-  Future<void> updateStudent({required StudentModel student}) async{
-    try{
-      await RepositoryCollection.repository.student.updateStudent(student: student);
-      _state = StudentEventResult.studentUpdated;
-    }catch(e){
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-  }
-
-  @override
   Future<void> deleteStudent({required int id}) async{
     try{
       await RepositoryCollection.repository.student.deleteStudent(id: id);

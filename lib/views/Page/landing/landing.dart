@@ -57,8 +57,6 @@ class Landing extends StatelessWidget {
                         length = sp.students.length;
                       }
                       lp.silentActivePage(length);
-                  }else if(value == StudentEventResult.studentUpdated){
-                    
                   }
                   context.read<StudentProvider>().setState(state: StudentEventResult.studentPrepareToFetch);
                 }

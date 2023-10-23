@@ -6,7 +6,6 @@ abstract class StudentProvider with ChangeNotifier{
 
   Future<void> fetchStudent();
   Future<void> insertStudent({required StudentModel student});
-  Future<void> updateStudent({required StudentModel student});
   Future<void> deleteStudent({required int id});
   void setState({required StudentEventResult state});
   List<StudentModel> get students;

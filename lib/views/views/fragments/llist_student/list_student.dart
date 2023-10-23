@@ -27,6 +27,7 @@ class ListStudent extends StatelessWidget {
     return Selector<StudentProvider, StudentEventResult>(
       selector: (context,provider) => provider.state,
       builder: (context, value, child){
+        print("build student list with event = $value");
         if(presenter.currentStudentProvider.state == StudentEventResult.studentPrepareToFetch
         || presenter.currentStudentProvider.state == StudentEventResult.studentDeleted){
           Future.delayed(Duration(milliseconds: presenter.currentStudentProvider.state == StudentEventResult.studentPrepareToFetch ? 3000 : 700),(){
