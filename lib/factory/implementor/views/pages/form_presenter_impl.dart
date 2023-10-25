@@ -37,7 +37,11 @@ class FormPresenterImpl implements FormPresenter{
       label: "Nama",
       val: existingStudent?.name,
       validator: onNameValidation,
-      onChange: changeButtonBehaviour
+      onChange: changeButtonBehaviour,
+      onEditingComplete: (){
+        birthPresenter.textPresenter.textNode.requestFocus();
+        birthPresenter.textPresenter.onTap?.call();
+      }
     );
 
     _alamatTextPresenter = PratamaTextFieldPresenter(
@@ -46,12 +50,14 @@ class FormPresenterImpl implements FormPresenter{
       maxLine: 3,
       val: existingStudent?.address,
       validator: onAddressValidation,
-      onChange: changeButtonBehaviour
+      onChange: changeButtonBehaviour,
+      onEditingComplete: () => _alamatTextPresenter.textNode.unfocus(),
     );
 
     _umurPresenter = PratamaTextFieldPresenter(
       isReadOnly: true,
       label: "Umur",
+      isEnabled: false,
       val: existingStudent?.age != null ? existingStudent?.age.toString() : "",
       controller: TextEditingController(text: existingStudent?.age != null ? "${existingStudent?.age} Tahun" : "")
     );
@@ -61,7 +67,7 @@ class FormPresenterImpl implements FormPresenter{
       initialDate: existingStudent?.birth,
       maxDateTime: DateTime.now(),
       validator: onBirthValidation,
-      onSelectedDate: onSelectedBirth
+      onSelectedDate: onSelectedBirth,
     );
 
     _genderPresenter = PratamaRadioPresenter(
