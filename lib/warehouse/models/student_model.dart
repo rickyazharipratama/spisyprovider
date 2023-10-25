@@ -1,3 +1,5 @@
+import 'package:spisyprovider/factory/Utils/log_util.dart';
+
 class StudentModel{
 
   int? id;
@@ -17,8 +19,8 @@ class StudentModel{
   });
 
   factory StudentModel.fromJson(Map<String,dynamic> json) {
-    print("student from database");
-    print(json);
+    LogUtil.log.write("student from database");
+    LogUtil.log.write(json);
     return StudentModel(
       id: json['id'],
       name: json['name'],

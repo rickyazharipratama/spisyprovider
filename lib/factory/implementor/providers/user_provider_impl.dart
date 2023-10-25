@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spisyprovider/factory/Utils/enum_collections.dart';
+import 'package:spisyprovider/factory/Utils/log_util.dart';
 import 'package:spisyprovider/factory/provider/user_provider.dart';
 import 'package:spisyprovider/warehouse/models/user_authentication.dart';
 import 'package:spisyprovider/warehouse/models/user_login.dart';
@@ -16,7 +17,6 @@ class UserProviderImpl with ChangeNotifier implements UserProvider{
     _user = user;
   }
 
-  @override
   String get loginKey => _loginKey;
   
   @override
@@ -32,7 +32,7 @@ class UserProviderImpl with ChangeNotifier implements UserProvider{
   
   @override
   setUserState(UserAuthenticationState state) {
-    print("change user state");
+    ("change user state");
     _state = state;
     notifyListeners();
   }
@@ -59,7 +59,7 @@ class UserProviderImpl with ChangeNotifier implements UserProvider{
     }catch (e){
       _loginState = LoginState.loginfailed;
       notifyListeners();
-      print(e);
+      LogUtil.log.write(e);
     }
     return _loginState;
   }
@@ -71,7 +71,7 @@ class UserProviderImpl with ChangeNotifier implements UserProvider{
       _state = UserAuthenticationState.userLoggedOut;
       _user = null;
     }catch(e){
-      print(e);
+      LogUtil.log.write(e);
     }
   }
   

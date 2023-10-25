@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:spisyprovider/factory/Utils/enum_collections.dart';
 import 'package:spisyprovider/factory/Utils/format_util.dart';
+import 'package:spisyprovider/factory/Utils/log_util.dart';
 import 'package:spisyprovider/factory/implementor/providers/detail_student_provider_impl.dart';
 import 'package:spisyprovider/factory/implementor/views/components/cards/student_card_presenter_impl.dart';
 import 'package:spisyprovider/factory/provider/detail_student_provider.dart';
@@ -38,7 +39,7 @@ class StudentCard extends StatelessWidget {
       child: Selector<ListCardProvider, int>(
         selector: (context,provider) => provider.activePage,
         builder: (context, value, child){
-          print("build list card with id : ${student.id} and active page = $value");
+          LogUtil.log.write("build list card with id : ${student.id} and active page = $value");
           double scale = provider.activePage == index ? 1 : 0.8;
           return TweenAnimationBuilder(
             tween: Tween(begin: scale, end: scale), 
@@ -54,7 +55,7 @@ class StudentCard extends StatelessWidget {
                 student: student
               ),builder: (context, child){
                 presenter.currentStudentProvider = context.read<DetailStudentProvider>();
-                print("build student with id : ${presenter.currentStudentProvider.currentStudent.id}");
+                LogUtil.log.write("build student with id : ${presenter.currentStudentProvider.currentStudent.id}");
                 return studentCard(context, provider,presenter,pageWidth, pageHeight);
               },
             )
@@ -139,7 +140,7 @@ class StudentCard extends StatelessWidget {
                   child: Selector<DetailStudentProvider,String?>(
                     selector: (context,provider) => provider.currentStudent.name,
                     builder: (context, value, child){
-                      print("building name with id ${student.id} with value = $value");
+                      LogUtil.log.write("building name with id ${student.id} with value = $value");
                       if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
                         return Container(
                           decoration: BoxDecoration(
@@ -315,7 +316,7 @@ class StudentCard extends StatelessWidget {
                             child: Selector<DetailStudentProvider,DateTime?>(
                               selector: (context,provider) => provider.currentStudent.birth,
                               builder: (context, value, child) {
-                                print("build birth with id: ${student.id} with value ${value?.toIso8601String()}");
+                                LogUtil.log.write("build birth with id: ${student.id} with value ${value?.toIso8601String()}");
                                 if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
 
                                   return Container(
@@ -369,7 +370,7 @@ class StudentCard extends StatelessWidget {
                             child: Selector<DetailStudentProvider,String?>(
                               selector: (_,__) => __.currentStudent.address,
                               builder: (context, value, child) {
-                                print("build address with id : ${student.id} with value ; $value");
+                                LogUtil.log.write("build address with id : ${student.id} with value ; $value");
                                 if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
                                   return Container(
                                     decoration: BoxDecoration(

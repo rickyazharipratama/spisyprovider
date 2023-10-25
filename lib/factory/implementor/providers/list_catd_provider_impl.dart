@@ -16,7 +16,7 @@ class ListCatdProviderImpl with ChangeNotifier implements ListCardProvider{
   
   @override
   silentActivePage(int index) {
-    _activePage = index;;
+    _activePage = index;
   }
 
 }

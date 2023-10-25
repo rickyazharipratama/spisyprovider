@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spisyprovider/factory/Utils/log_util.dart';
 import 'package:spisyprovider/factory/provider/landing_page_provider.dart';
 import 'package:spisyprovider/views/Page/landing/landing_presenter.dart';
 import 'package:spisyprovider/warehouse/constant_collection.dart';
@@ -17,7 +18,7 @@ class LandingPresenterImpl implements LandingPresenter{
   @override
   void onBottomNavigationTapped(int index) {
     if(provider.active != index){
-      print("nav button tapped");
+      LogUtil.log.write("nav button tapped");
       switch (index) {
         case 0:
           context.go(ConstantCollection.repository.routers.location.listStudent);       
@@ -26,7 +27,7 @@ class LandingPresenterImpl implements LandingPresenter{
           context.go(ConstantCollection.repository.routers.location.logout);
           break;
         default:
-      };
+      }
       provider.setActivePage(index);
     }
   }

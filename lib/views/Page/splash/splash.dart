@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spisyprovider/factory/Utils/enum_collections.dart';
+import 'package:spisyprovider/factory/Utils/log_util.dart';
 import 'package:spisyprovider/factory/implementor/views/pages/splash_presenter_impl.dart';
 import 'package:spisyprovider/factory/provider/user_provider.dart';
 import 'package:spisyprovider/views/Page/splash/splash_presenter.dart';
@@ -24,7 +25,7 @@ class Splash extends StatelessWidget {
           Positioned.fill(
             child: Builder(
               builder: (context) {
-                print("build wrapper immage");
+                LogUtil.log.write("build wrapper immage");
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(10),
@@ -50,16 +51,16 @@ class Splash extends StatelessWidget {
             child: Center(
               child: Builder(
                 builder: (context) {
-                  print("build wrapper loading");
+                  LogUtil.log.write("build wrapper loading");
                   return SizedBox(
                     width: 20,
                     height: 20,
                     child: Selector<UserProvider,UserAuthenticationState>(
                       selector: (context,provider)=> provider.state,
                       builder: (context, value, child){
-                        print("build outer loading");
+                        LogUtil.log.write("build outer loading");
                         if(value == UserAuthenticationState.userValidating){
-                          print("build innerloading");
+                          LogUtil.log.write("build innerloading");
                           presenter.retrievingUser(context);
                           
                           return const CircularProgressIndicator(

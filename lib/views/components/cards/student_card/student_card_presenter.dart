@@ -1,10 +1,5 @@
-import 'package:spisyprovider/factory/provider/detail_student_provider.dart';
-import 'package:spisyprovider/factory/provider/student_provider.dart';
+import 'package:spisyprovider/factory/raw_material/detail_student_material.dart';
 
-abstract class StudentCardPresenter{
-  StudentProvider get provider;
-  DetailStudentProvider get currentStudentProvider;
-  set currentStudentProvider(DetailStudentProvider dsp);
-  onDeleteCard(int id){ 
-  }
+abstract class StudentCardPresenter extends DetailStudentMaterial{
+  onDeleteCard(int id);
 }

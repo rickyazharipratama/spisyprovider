@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:spisyprovider/factory/raw_material/widget_context.dart';
 
-abstract class LogoutPresenter{
+abstract class LogoutPresenter extends WidgetContext{
 
-  BuildContext get currentContext;
   Future<void >onLogoutTapped();
 }

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pratama_form_field_factory/Utils/pratama_Constants.dart';
 import 'package:pratama_form_field_factory/builders/form_builder/pratama_form_builder_model.dart';
-import 'package:pratama_form_field_factory/builders/form_builder/pratama_form_custom_field.dart';
 import 'package:pratama_form_field_factory/buttons/pratama_primary_button.dart';
 import 'package:pratama_form_field_factory/pratama_form_field_factory.dart';
 import 'package:pratama_form_field_factory/text_field/pratama_text_field_presenter.dart';
 import 'package:provider/provider.dart';
 import 'package:spisyprovider/factory/Utils/enum_collections.dart';
+import 'package:spisyprovider/factory/Utils/log_util.dart';
 import 'package:spisyprovider/factory/implementor/views/pages/login_presenter_impl.dart';
 import 'package:spisyprovider/factory/provider/user_provider.dart';
 import 'package:spisyprovider/views/Page/login/login_presenter.dart';
@@ -23,7 +23,7 @@ class Login extends StatelessWidget {
       provider: context.read<UserProvider>(),
       context: context
     );
-    print("building login");
+    LogUtil.log.write("building login");
     return Scaffold(
       body: PratamaFormBuilder(
         presenter: presenter.currentFormBuilderPresenter,

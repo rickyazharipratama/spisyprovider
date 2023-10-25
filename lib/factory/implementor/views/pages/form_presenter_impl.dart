@@ -4,6 +4,7 @@ import 'package:pratama_form_field_factory/pickers/pratama_date_time_picker/prat
 import 'package:pratama_form_field_factory/radios/models/pratama_radio_model.dart';
 import 'package:pratama_form_field_factory/radios/pratama_radio_presenter.dart';
 import 'package:pratama_form_field_factory/text_field/pratama_text_field_presenter.dart';
+import 'package:spisyprovider/factory/Utils/log_util.dart';
 import 'package:spisyprovider/factory/provider/button_form_behaviour_provider.dart';
 import 'package:spisyprovider/factory/provider/student_provider.dart';
 import 'package:spisyprovider/views/Page/form/form_presenter.dart';
@@ -160,7 +161,7 @@ class FormPresenterImpl implements FormPresenter{
       gender: _genderPresenter.selectedValue,
       address: _alamatTextPresenter.textController.value.text.trim()
     );
-    print("insert from form call");
+    LogUtil.log.write("insert from form call");
     await _provider.insertStudent(student: student);
   }
 

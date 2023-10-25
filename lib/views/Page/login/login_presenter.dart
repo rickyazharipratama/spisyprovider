@@ -3,11 +3,11 @@ import 'package:pratama_form_field_factory/builders/form_builder/pratama_form_bu
 import 'package:pratama_form_field_factory/text_field/pratama_text_field_presenter.dart';
 import 'package:spisyprovider/factory/Utils/enum_collections.dart';
 import 'package:spisyprovider/factory/provider/user_provider.dart';
+import 'package:spisyprovider/factory/raw_material/widget_context.dart';
 
-abstract class LoginPresenter{
+abstract class LoginPresenter extends WidgetContext{
 
   UserProvider get currentProvider;
-  BuildContext get currentContext;
   ScrollController get currentScroolController;
   PratamaTextFieldPresenter get currentUsernameTextPresenter;
   PratamaTextFieldPresenter get currentPasswordTextPresenter;

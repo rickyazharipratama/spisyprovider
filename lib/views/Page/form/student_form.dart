@@ -8,6 +8,7 @@ import 'package:pratama_form_field_factory/buttons/pratama_primary_button.dart';
 import 'package:pratama_form_field_factory/buttons/pratama_primary_disabled_button.dart';
 import 'package:pratama_form_field_factory/pratama_form_field_factory.dart';
 import 'package:provider/provider.dart';
+import 'package:spisyprovider/factory/Utils/log_util.dart';
 import 'package:spisyprovider/factory/implementor/views/pages/form_presenter_impl.dart';
 import 'package:spisyprovider/factory/provider/button_form_behaviour_provider.dart';
 import 'package:spisyprovider/factory/provider/student_provider.dart';
@@ -30,7 +31,7 @@ class StudentForm extends StatelessWidget {
       existingStudent: student
     );
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-    print("build form");
+    LogUtil.log.write("build form");
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -53,136 +54,137 @@ class StudentForm extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: GestureDetector(
         child: PratamaFormBuilder(
-              presenter: presenter.currentFormPresenter,
-              fields: [
-                PratamaFormBuilderModel(
-                  field: PratamaFormField.textField,
-                  presenter: presenter.nameTextPresenter
-                ),
-                
-                PratamaFormBuilderModel(
-                  field: PratamaFormField.dateTIemPicker,
-                  presenter: presenter.birthPresenter
-                ),
-                
-                PratamaFormBuilderModel(
-                  field: PratamaFormField.textField,
-                  presenter: presenter.umurPresenter,
-                ),
-      
-                PratamaFormBuilderModel(
-                  field: PratamaFormField.radio,
-                  presenter: presenter.genderPresenter
-                ),
-      
-                PratamaFormBuilderModel(
-                  field: PratamaFormField.textField,
-                  presenter: presenter.alamatTextPresenter
-                )
-              ],
-              customField: [
-              
-                PratamaFormCustomField(
-                  topOf: 5, 
-                  field: Padding(
-                    padding: const EdgeInsets.fromLTRB(10,30.0,10,10),
-                    child: presenter.existingStudent!.id == null ? 
-                      PratamaPrimaryButton(
-                        onTap: () async{
-                          bool isAlreadyExecute = false;
-                          if(presenter.currentFormPresenter.validateForm()){
-                            print("initiating execute");
-                            // LoadingExecutor le = LoadingExecutor()..execute =() async{
-      
-                            //   if(presenter.existingStudent!.id == null){
-                            //     presenter.onInsertStudent();
-                            //   }else{
-                            //     presenter.onUpdateStudent();
-                            //   }
-                            //   //Navigator.of(context).pop(presenter.provider.state);
-                              
-                            //   Future.delayed(const Duration(milliseconds: 1500),(){})
-                            //   .whenComplete(() => context.pop(presenter.provider.state));
-                            // };
-                            // context.push(
-                            //   "${ConstantCollection.repository.routers.location.dialog}/${ConstantCollection.repository.routers.params.loading}",
-                            //   extra: le
-                            // )
-                            // .then((value){
-                            //   print("pop from execute");
-                            //   //Navigator.of(context).pop(presenter.provider.state);
-                            //   //context.pop(value);
-                            // });
-                            
-                            await showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                                builder: (context){
-                                  Future.delayed(const Duration(milliseconds: 800),() async{
-                                    if(!isAlreadyExecute){
-                                      await presenter.onInsertStudent();
-                                    }
-                                  }).whenComplete(() {
-                                    if(!isAlreadyExecute){
-                                      isAlreadyExecute = true;
-                                      Navigator.of(context).pop();
-                                      context.pop(presenter.provider.state);
-                                    }
-                                  });
-                                return const Loading(
-                                  color:  Color.fromARGB(255, 204, 110, 200),
-                                );
-                              }
+          paddingForField: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+          presenter: presenter.currentFormPresenter,
+          fields: [
+            PratamaFormBuilderModel(
+              field: PratamaFormField.textField,
+              presenter: presenter.nameTextPresenter
+            ),
+            
+            PratamaFormBuilderModel(
+              field: PratamaFormField.dateTIemPicker,
+              presenter: presenter.birthPresenter
+            ),
+            
+            PratamaFormBuilderModel(
+              field: PratamaFormField.textField,
+              presenter: presenter.umurPresenter,
+            ),
+    
+            PratamaFormBuilderModel(
+              field: PratamaFormField.radio,
+              presenter: presenter.genderPresenter
+            ),
+    
+            PratamaFormBuilderModel(
+              field: PratamaFormField.textField,
+              presenter: presenter.alamatTextPresenter
+            )
+          ],
+          customField: [
+          
+            PratamaFormCustomField(
+              topOf: 5, 
+              field: Padding(
+                padding: const EdgeInsets.fromLTRB(25,30.0,25,20),
+                child: presenter.existingStudent!.id == null ? 
+                  PratamaPrimaryButton(
+                    onTap: () async{
+                      bool isAlreadyExecute = false;
+                      if(presenter.currentFormPresenter.validateForm()){
+                        LogUtil.log.write("initiating execute");
+                        // LoadingExecutor le = LoadingExecutor()..execute =() async{
+    
+                        //   if(presenter.existingStudent!.id == null){
+                        //     presenter.onInsertStudent();
+                        //   }else{
+                        //     presenter.onUpdateStudent();
+                        //   }
+                        //   //Navigator.of(context).pop(presenter.provider.state);
+                          
+                        //   Future.delayed(const Duration(milliseconds: 1500),(){})
+                        //   .whenComplete(() => context.pop(presenter.provider.state));
+                        // };
+                        // context.push(
+                        //   "${ConstantCollection.repository.routers.location.dialog}/${ConstantCollection.repository.routers.params.loading}",
+                        //   extra: le
+                        // )
+                        // .then((value){
+                        //   print("pop from execute");
+                        //   //Navigator.of(context).pop(presenter.provider.state);
+                        //   //context.pop(value);
+                        // });
+                        
+                        await showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                            builder: (context){
+                              Future.delayed(const Duration(milliseconds: 800),() async{
+                                if(!isAlreadyExecute){
+                                  await presenter.onInsertStudent();
+                                }
+                              }).whenComplete(() {
+                                if(!isAlreadyExecute){
+                                  isAlreadyExecute = true;
+                                  Navigator.of(context).pop();
+                                  context.pop(presenter.provider.state);
+                                }
+                              });
+                            return const Loading(
+                              color:  Color.fromARGB(255, 204, 110, 200),
                             );
                           }
-                        },
-                        text: presenter.existingStudent!.id == null ? "Simpan" : "Perbaharui",
-                      )
-                    :Selector<ButtonFormBehaviourProvider, bool?>(
-                      selector: (context, provider) => provider.isButtonEnabled,
-                      builder: (context, value, child) {
-                        print("rebuild button behaviour");
-                        if(!value!){
-                          return const PratamaPrimaryDisabledButton(
-                            text: "Perbaharui",
+                        );
+                      }
+                    },
+                    text: presenter.existingStudent!.id == null ? "Simpan" : "Perbaharui",
+                  )
+                :Selector<ButtonFormBehaviourProvider, bool?>(
+                  selector: (context, provider) => provider.isButtonEnabled,
+                  builder: (context, value, child) {
+                    LogUtil.log.write("rebuild button behaviour");
+                    if(!value!){
+                      return const PratamaPrimaryDisabledButton(
+                        text: "Perbaharui",
+                      );
+                    }
+                    return PratamaPrimaryButton(
+                      text: "Perbaharui",
+                      onTap: () async{
+                        bool isAlreadyExecute = false;
+                        if(presenter.currentFormPresenter.validateForm()){
+                          late StudentModel updated;
+                          await showDialog(
+                            context: context, 
+                            barrierDismissible: false,
+                            builder: (context) {
+                              Future.delayed(const Duration(milliseconds: 800),(){
+                                if(!isAlreadyExecute){
+                                  updated = presenter.onUpdateStudent();
+                                }
+                              })
+                              .whenComplete((){
+                                if(!isAlreadyExecute){
+                                  isAlreadyExecute = true;
+                                  Navigator.of(context).pop();
+                                  context.pop(updated);
+                                }
+                              });
+                              return const Loading(
+                                color:  Color.fromARGB(255, 204, 110, 200),
+                              );
+                            },
                           );
                         }
-                        return PratamaPrimaryButton(
-                          text: "Perbaharui",
-                          onTap: () async{
-                            bool isAlreadyExecute = false;
-                            if(presenter.currentFormPresenter.validateForm()){
-                              late StudentModel updated;
-                              await showDialog(
-                                context: context, 
-                                barrierDismissible: false,
-                                builder: (context) {
-                                  Future.delayed(const Duration(milliseconds: 800),(){
-                                    if(!isAlreadyExecute){
-                                      updated = presenter.onUpdateStudent();
-                                    }
-                                  })
-                                  .whenComplete((){
-                                    if(!isAlreadyExecute){
-                                      isAlreadyExecute = true;
-                                      Navigator.of(context).pop();
-                                      context.pop(updated);
-                                    }
-                                  });
-                                  return const Loading(
-                                    color:  Color.fromARGB(255, 204, 110, 200),
-                                  );
-                                },
-                              );
-                            }
-                          },
-                        );
                       },
-                    )
-                  )
+                    );
+                  },
                 )
-              ],
-            ),
+              )
+            )
+          ],
+        ),
       )
     );
   }

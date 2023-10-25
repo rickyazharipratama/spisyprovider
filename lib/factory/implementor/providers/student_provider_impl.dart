@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:spisyprovider/factory/Utils/enum_collections.dart';
+import 'package:spisyprovider/factory/Utils/log_util.dart';
 import 'package:spisyprovider/factory/provider/student_provider.dart';
 import 'package:spisyprovider/warehouse/models/student_model.dart';
 import 'package:spisyprovider/warehouse/repository_collection.dart';
@@ -22,7 +23,7 @@ class StudentProviderImpl with ChangeNotifier implements StudentProvider{
       notifyListeners();
     }catch(e){
       if (kDebugMode) {
-        print(e);
+        LogUtil.log.write(e);
       }
     }
   }
@@ -30,12 +31,12 @@ class StudentProviderImpl with ChangeNotifier implements StudentProvider{
   @override
   Future<void> insertStudent({required StudentModel student}) async{
     try{
-      print("inserting data");
+      LogUtil.log.write("inserting data");
       await RepositoryCollection.repository.student.insertStudent(student: student);
       _state = StudentEventResult.studentInserted;
     }catch(e){
       if (kDebugMode) {
-        print(e);
+        LogUtil.log.write(e);
       }
     }
   }
@@ -66,7 +67,7 @@ class StudentProviderImpl with ChangeNotifier implements StudentProvider{
 
   @override
   void dispose() {
-    print("student provider disposing");
+    LogUtil.log.write("student provider disposing");
     super.dispose();
   }
 }

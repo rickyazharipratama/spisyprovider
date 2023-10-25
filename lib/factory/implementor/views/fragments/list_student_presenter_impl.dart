@@ -5,12 +5,12 @@ import 'package:spisyprovider/views/views/fragments/llist_student/list_student_p
 
 class ListStudentPresenterImpl implements ListStudentPresenter{
 
-  final StudentProvider provider;
+  final StudentProvider studentProvider;
   final LandingPageProvider pageProvider;
   final ListCardProvider cardProvider;
 
   ListStudentPresenterImpl({
-    required this.provider,
+    required this.studentProvider,
     required this.pageProvider,
     required this.cardProvider
   }){
@@ -30,5 +30,5 @@ class ListStudentPresenterImpl implements ListStudentPresenter{
   ListCardProvider get currentListCardProvider => cardProvider;
   
   @override
-  StudentProvider get currentStudentProvider => provider;
+  StudentProvider get provider => studentProvider;
 }

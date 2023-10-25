@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spisyprovider/factory/Utils/enum_collections.dart';
+import 'package:spisyprovider/factory/Utils/log_util.dart';
 import 'package:spisyprovider/factory/implementor/views/pages/landing_presenter_impl.dart';
 import 'package:spisyprovider/factory/provider/landing_page_provider.dart';
 import 'package:spisyprovider/factory/provider/list_card_provider.dart';
@@ -47,7 +48,7 @@ class Landing extends StatelessWidget {
               await context.push(
                 ConstantCollection.repository.routers.location.form)
               .then((value){
-                print("back from form student with state = $value");
+                LogUtil.log.write("back from form student with state = $value");
                 if(value != null){
                   if(value  ==  StudentEventResult.studentInserted){
                       ListCardProvider lp = context.read<ListCardProvider>();
