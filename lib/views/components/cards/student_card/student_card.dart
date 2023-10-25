@@ -171,8 +171,8 @@ class StudentCard extends StatelessWidget {
                   )
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(((pageWidth * 0.35)), 5, 10, 10),
-                  width: pageWidth,
+                  padding: EdgeInsets.fromLTRB(((pageWidth * 0.28)), 5, 10, 10),
+                  width: pageWidth * 0.8,
                   child: Selector<DetailStudentProvider, int?>(
                     selector: (context, provider) => provider.currentStudent.age,
                     builder: (context, value, child){
@@ -182,16 +182,19 @@ class StudentCard extends StatelessWidget {
                         builder: (context, value, child) {
                           if(presenter.currentStudentProvider.currentState == DetailStudentEvent.studentPreparing && value == null){
                             return Container(
+                              height: 10,
                               decoration: BoxDecoration(
                                 color: const Color.fromARGB(255, 215, 212, 212),
                                 borderRadius: BorderRadius.circular(5)
                               ),
                               child: Shimmer.fromColors(
-                                baseColor: const Color.fromARGB(255, 244, 244, 244), 
-                                highlightColor: const Color.fromARGB(255, 251, 251, 251),
+                                direction: ShimmerDirection.ltr,
+                                baseColor: const Color.fromARGB(255, 220, 220, 220), 
+                                highlightColor: Colors.white,
+                                enabled: true,
                                 child: SizedBox(
-                                   width: pageWidth * 0.2,
-                                  height: 5,
+                                   width: pageWidth * 0.8,
+                                  height: 8,
                                 )
                               ),
                             );

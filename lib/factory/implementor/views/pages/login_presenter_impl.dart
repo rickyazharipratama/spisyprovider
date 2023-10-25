@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pratama_form_field_factory/builders/form_builder/pratama_form_builder_presenter.dart';
 import 'package:pratama_form_field_factory/text_field/pratama_text_field_presenter.dart';
 import 'package:spisyprovider/factory/Utils/enum_collections.dart';
 import 'package:spisyprovider/factory/provider/user_provider.dart';
@@ -11,22 +12,29 @@ class LoginPresenterImpl implements LoginPresenter{
   final BuildContext context;
   late PratamaTextFieldPresenter usernameTextPresenter;
   late PratamaTextFieldPresenter passwordTextPresenter;
+  late ScrollController scrollController;
+  final PratamaFormBuilderPresenter formBuilderPresenter = PratamaFormBuilderPresenter();
 
 
   LoginPresenterImpl({required this.provider, required this.context}){
+    scrollController = ScrollController();
     usernameTextPresenter = PratamaTextFieldPresenter(
       keyboardType: TextInputType.name,
       label: "Nama Pengguna",
-      validator: onUsernameValidation
+      validator: onUsernameValidation,
+      onEditingComplete: (){
+         passwordTextPresenter.textNode.requestFocus();
+      }
     );
 
     passwordTextPresenter = PratamaTextFieldPresenter(
       label: "Kata Sandi",
-      keyboardType: TextInputType.name,
+      keyboardType: TextInputType.visiblePassword,
       isObscured: true,
-      validator: onPasswordValidation
+      validator: onPasswordValidation,
+      onEditingComplete: () => passwordTextPresenter.textNode.unfocus()
     );
-
+    
   }
 
   @override
@@ -67,5 +75,11 @@ class LoginPresenterImpl implements LoginPresenter{
 
   @override
   UserProvider get currentProvider => provider;
+  
+  @override
+  ScrollController get currentScroolController => scrollController;
+  
+  @override
+  PratamaFormBuilderPresenter get currentFormBuilderPresenter => formBuilderPresenter;
 
 }

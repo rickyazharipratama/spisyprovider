@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pratama_form_field_factory/builders/form_builder/pratama_form_builder_presenter.dart';
 import 'package:pratama_form_field_factory/pickers/pratama_date_time_picker/pratama_date_time_picker_presenter.dart';
 import 'package:pratama_form_field_factory/radios/models/pratama_radio_model.dart';
 import 'package:pratama_form_field_factory/radios/pratama_radio_presenter.dart';
@@ -22,6 +23,7 @@ class FormPresenterImpl implements FormPresenter{
   late PratamaRadioPresenter _genderPresenter;
 
   final ButtonFormBehaviourProvider? buttonProvider;
+  final PratamaFormBuilderPresenter formPresenter = PratamaFormBuilderPresenter();
 
   FormPresenterImpl({ 
     required StudentProvider provider, 
@@ -178,4 +180,7 @@ class FormPresenterImpl implements FormPresenter{
     || _existingStudent.gender != _genderPresenter.selectedValue
     || _existingStudent.address != _alamatTextPresenter.textController.value.text.trim();
   }
+  
+  @override
+  PratamaFormBuilderPresenter get currentFormPresenter => formPresenter;
 }
